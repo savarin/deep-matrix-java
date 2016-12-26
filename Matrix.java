@@ -1,6 +1,3 @@
-import java.util.Random;
-
-
 public class Matrix {
   private int m;
   private int n;
@@ -24,24 +21,12 @@ public class Matrix {
     }
   }
   
-  public static Matrix identity(int n) {
+  public static Matrix identity(int n, double scalar) {
     Matrix I = new Matrix(n, n);
 
     for (int i=0; i<n; i++) {
       for (int j=0; j<n; j++) {
-        I.entries[i][j] = 1.0;
-      }
-    }
-
-    return I;
-  }
-
-  public static Matrix identity(int n, double a) {
-    Matrix I = new Matrix(n, n);
-
-    for (int i=0; i<n; i++) {
-      for (int j=0; j<n; j++) {
-        I.entries[i][j] = a;
+        I.entries[i][j] = scalar;
       }
     }
 
@@ -50,11 +35,10 @@ public class Matrix {
 
   public static Matrix random(int m, int n) {
     Matrix R = new Matrix(m, n);
-    Random random = new Random();
 
     for (int i=0; i<m; i++) {
       for (int j=0; j<n; j++) {
-        R.entries[i][j] = random.nextGaussian();
+        R.entries[i][j] = Math.random() - 0.5;
       }
     }
 
@@ -69,7 +53,7 @@ public class Matrix {
 
     for (int i=0; i<A.m; i++) {
       for (int j=0; j<A.n; j++) {
-        C.entries[i][j] += A.entries[i][j] + B.entries[i][j];
+        C.entries[i][j] = A.entries[i][j] + B.entries[i][j];
       }
     }
 
@@ -147,7 +131,7 @@ public class Matrix {
 
     Matrix A = new Matrix(a);
     Matrix B = new Matrix(b);
-    Matrix C = new Matrix(a);
+    Matrix C = new Matrix(2, 2);
 
     C = A.plus(B);
     C.print();
@@ -160,14 +144,14 @@ public class Matrix {
     W.print();
 
     Matrix I = new Matrix(2, 2);
-    W = Matrix.identity(2);
-    W.print();
+    I = Matrix.identity(2, 0.8);
+    I.print();
       
     C = C.softmax();
     C.print();
 
     int[] i = new int[2];
-    i = C.argmax();
+    i = W.argmax();
     System.out.println(i[0]);
     System.out.println(i[1]);
   }
