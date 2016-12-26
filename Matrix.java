@@ -1,5 +1,4 @@
 public class Matrix {
-
   private int m;
   private int n;
   private float[][] entries;
@@ -18,6 +17,7 @@ public class Matrix {
   
   public Matrix dot(Matrix B) {
     Matrix A = this;
+    if (A.n != B.m) throw new RuntimeException("Improper matrix shapes.");
 
     float [][] c = new float[A.m][B.n];
     Matrix C = new Matrix(c);
@@ -44,7 +44,7 @@ public class Matrix {
 
   public static void main(String[] args) {
     float [][] a = {{1, 2}, {2, 1}};
-    float [][] b = {{1, 0}, {0, 1}};
+    float [][] b = {{1, 0, 3}, {0, 1, 3}, {0, 1, 3}};
 
     Matrix A = new Matrix(a);
     Matrix B = new Matrix(b);
