@@ -61,12 +61,26 @@ public class Matrix {
     return R;
   }
 
-  public Matrix dot(Matrix B) {
+  public Matrix plus(Matrix B) {
     Matrix A = this;
-    if (A.n != B.m) throw new RuntimeException("Improper matrix shape.");
+    Matrix C = new Matrix(A.m, A.n);
 
-    double [][] c = new double[A.m][B.n];
-    Matrix C = new Matrix(c);
+    if (A.n != B.n || A.m != B.m) throw new RuntimeException("Improper matrix shape.");
+
+    for (int i=0; i<A.m; i++) {
+      for (int j=0; j<A.n; j++) {
+        C.entries[i][j] += A.entries[i][j] + B.entries[i][j];
+      }
+    }
+
+    return C;
+  }
+
+  public Matrix times(Matrix B) {
+    Matrix A = this;
+    Matrix C = new Matrix(A.m, B.n);
+    
+    if (A.n != B.m) throw new RuntimeException("Improper matrix shape.");
 
     for (int i=0; i<A.m; i++) {
       for (int j=0; j<B.n; j++) {
@@ -79,6 +93,45 @@ public class Matrix {
     return C;
   }
 
+  public Matrix softmax() {
+    double expEntry;
+    double expTotal = 0;
+    Matrix C = new Matrix(m, n);
+
+    for (int i=0; i<m; i++) {
+      for (int j=0; j<n; j++) {
+        expEntry = Math.exp(entries[i][j]);
+        expTotal += expEntry;
+        C.entries[i][j] = expEntry;
+      }
+    }
+
+    for (int i=0; i<m; i++) {
+      for (int j=0; j<n; j++) {      
+        C.entries[i][j] = C.entries[i][j] / expTotal;
+      }
+    }
+
+    return C;
+  }
+
+  public int[] argmax() {
+    double maxEntry = entries[0][0];    
+    int[] maxIndex = {0, 0};
+
+    for (int i=0; i<m; i++) {
+      for (int j=0; j<n; j++) {
+        if (entries[i][j] > maxEntry) {
+          maxIndex[0] = i;
+          maxIndex[1] = j;
+          maxEntry = entries[i][j];
+        }
+      }
+    }
+
+    return maxIndex;
+  }
+
   public void print() {
     for (int i=0; i<m; i++) {
       for (int j=0; j<n; j++) {
@@ -89,14 +142,17 @@ public class Matrix {
   }
 
   public static void main(String[] args) {
-    double [][] a = {{1, 2}, {2, 1}};
-    double [][] b = {{1, 0}, {0, 1}};
+    double[][] a = {{1, 2}, {2, 1}};
+    double[][] b = {{1, 0}, {0, 1}};
 
     Matrix A = new Matrix(a);
     Matrix B = new Matrix(b);
     Matrix C = new Matrix(a);
 
-    C = A.dot(B);
+    C = A.plus(B);
+    C.print();
+
+    C = A.times(B);
     C.print();
 
     Matrix W = new Matrix(2, 2);
@@ -106,5 +162,13 @@ public class Matrix {
     Matrix I = new Matrix(2, 2);
     W = Matrix.identity(2);
     W.print();
+      
+    C = C.softmax();
+    C.print();
+
+    int[] i = new int[2];
+    i = C.argmax();
+    System.out.println(i[0]);
+    System.out.println(i[1]);
   }
 }
