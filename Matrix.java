@@ -1,7 +1,7 @@
 public class Matrix {
-  private int m;
-  private int n;
-  private double[][] entries;
+  public int m;
+  public int n;
+  public double[][] entries;
 
   public Matrix(int m, int n) {
     this.m = m;
@@ -116,10 +116,10 @@ public class Matrix {
     return maxIndex;
   }
 
-  public void print() {
+  public void show() {
     for (int i=0; i<m; i++) {
       for (int j=0; j<n; j++) {
-        System.out.printf("%.1f ", entries[i][j]);
+        System.out.printf("%.3f ", entries[i][j]);
       }
       System.out.println();
     }
@@ -134,21 +134,21 @@ public class Matrix {
     Matrix C = new Matrix(2, 2);
 
     C = A.plus(B);
-    C.print();
+    C.show();
 
     C = A.times(B);
-    C.print();
+    C.show();
 
     Matrix W = new Matrix(2, 2);
     W = Matrix.random(2, 2);
-    W.print();
+    W.show();
 
     Matrix I = new Matrix(2, 2);
     I = Matrix.identity(2, 0.8);
-    I.print();
+    I.show();
       
     C = C.softmax();
-    C.print();
+    C.show();
 
     int[] i = new int[2];
     i = W.argmax();
