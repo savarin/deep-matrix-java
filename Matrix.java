@@ -1,3 +1,6 @@
+import java.util.Random;
+
+
 public class Matrix {
   public int m;
   public int n;
@@ -35,10 +38,11 @@ public class Matrix {
 
   public static Matrix random(int m, int n) {
     Matrix R = new Matrix(m, n);
+    Random random = new Random();
 
     for (int i=0; i<m; i++) {
       for (int j=0; j<n; j++) {
-        R.entries[i][j] = Math.random() - 0.5;
+        R.entries[i][j] = random.nextGaussian() * 0.1;
       }
     }
 
