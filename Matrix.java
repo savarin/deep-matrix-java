@@ -119,40 +119,9 @@ public class Matrix {
   public void show() {
     for (int i=0; i<m; i++) {
       for (int j=0; j<n; j++) {
-        System.out.printf("%.3f ", entries[i][j]);
+        System.out.printf("%.6f ", entries[i][j]);
       }
       System.out.println();
     }
-  }
-
-  public static void main(String[] args) {
-    double[][] a = {{1, 2}, {2, 1}};
-    double[][] b = {{1, 0}, {0, 1}};
-
-    Matrix A = new Matrix(a);
-    Matrix B = new Matrix(b);
-    Matrix C = new Matrix(2, 2);
-
-    C = A.plus(B);
-    C.show();
-
-    C = A.times(B);
-    C.show();
-
-    Matrix W = new Matrix(2, 2);
-    W = Matrix.random(2, 2);
-    W.show();
-
-    Matrix I = new Matrix(2, 2);
-    I = Matrix.identity(2, 0.8);
-    I.show();
-      
-    C = C.softmax();
-    C.show();
-
-    int[] i = new int[2];
-    i = W.argmax();
-    System.out.println(i[0]);
-    System.out.println(i[1]);
   }
 }
