@@ -22,7 +22,7 @@ public class Model {
     return data;
   }
 
-  public static void testSingleRow() {
+  public static void singleRow() {
     double[][] x = {{0.83290956}, {0.74926865}, {-0.61259594}, {-0.51933199}};
     Matrix X = new Matrix(x);
 
@@ -44,7 +44,7 @@ public class Model {
     System.out.println(-Math.log(result.entries[labelIndex][0]));
   }
 
-  public static void testAllRows()
+  public static void allRows()
       throws FileNotFoundException, IOException {
     List<List<String>> data = readCSV("data.csv");
 
@@ -75,14 +75,13 @@ public class Model {
       result = result.softmax();
 
       int labelIndex = result.argmax()[0];
-
       loss += -Math.log(result.entries[labelIndex][0]);
     }
 
     System.out.println(loss / numRows);
   }
 
-  public static void testNaiveOptimization()
+  public static void naiveOptimization()
       throws FileNotFoundException, IOException {
     List<List<String>> data = readCSV("data.csv");
 
@@ -117,7 +116,6 @@ public class Model {
         result = result.softmax();
 
         int labelIndex = result.argmax()[0];
-
         loss += -Math.log(result.entries[labelIndex][0]);
       }
 
@@ -133,12 +131,62 @@ public class Model {
     }
   }
 
+  public static void gradientOptimization()
+      throws FileNotFoundException, IOException {
+    List<List<String>> data = readCSV("data.csv");
+
+    int numRows = data.size();
+    int numColumns = data.get(0).size();
+
+    Matrix W = new Matrix(2, 4);
+    W = Matrix.random(2, 4);
+
+    Matrix B = new Matrix(2, 1);
+    B = Matrix.random(2, 1);
+
+    double loss = 0;
+
+    for (int i=1; i<numRows; i++) {
+      int label = Integer.parseInt(data.get(i).get(0));
+
+      double[][] features = new double[numColumns-1][1];
+      for (int j=1; j<numColumns; j++) {
+        features[j-1][0] = Double.parseDouble(data.get(i).get(j));
+      }
+
+      Matrix X = new Matrix(features);
+
+      Matrix result = new Matrix(2, 1);
+      result = W.times(X).plus(B);
+      result = result.softmax();
+
+      int labelIndex = result.argmax()[0];
+      loss += -Math.log(result.entries[labelIndex][0]);
+      System.out.println(loss / (double) i);
+
+      Matrix labelOneHot = new Matrix(2, 1);
+      labelOneHot.entries[label][0] = 1.0;
+      result = W.times(X).plus(B);
+      result = result.minus(labelOneHot);
+
+      Matrix T = new Matrix(1, 4);
+      T = X.transpose();
+      Matrix gradient = new Matrix(2, 4);
+      gradient = result.times(T);
+
+      Matrix learningRate = new Matrix(2, 2);
+      learningRate = Matrix.identity(2, 0.001);
+      gradient = learningRate.times(gradient);
+      W = W.minus(gradient);
+    }
+  }
+
   public static void main(String[] args)
     throws FileNotFoundException, IOException {
-
-    testSingleRow();
-    testAllRows();
-    testNaiveOptimization();
+    // singleRow();
+    // allRows();
+    // naiveOptimization();
+    gradientOptimization();      
   }
 }
 

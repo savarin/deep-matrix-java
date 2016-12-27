@@ -28,9 +28,7 @@ public class Matrix {
     Matrix I = new Matrix(n, n);
 
     for (int i=0; i<n; i++) {
-      for (int j=0; j<n; j++) {
-        I.entries[i][j] = scalar;
-      }
+      I.entries[i][i] = scalar;
     }
 
     return I;
@@ -42,7 +40,7 @@ public class Matrix {
 
     for (int i=0; i<m; i++) {
       for (int j=0; j<n; j++) {
-        R.entries[i][j] = random.nextGaussian() * 0.1;
+        R.entries[i][j] = random.nextGaussian() * 0.01;
       }
     }
 
@@ -64,6 +62,21 @@ public class Matrix {
     return C;
   }
 
+  public Matrix minus(Matrix B) {
+    Matrix A = this;
+    Matrix C = new Matrix(A.m, A.n);
+
+    if (A.n != B.n || A.m != B.m) throw new RuntimeException("Improper matrix shape.");
+
+    for (int i=0; i<A.m; i++) {
+      for (int j=0; j<A.n; j++) {
+        C.entries[i][j] = A.entries[i][j] - B.entries[i][j];
+      }
+    }
+
+    return C;
+  }
+
   public Matrix times(Matrix B) {
     Matrix A = this;
     Matrix C = new Matrix(A.m, B.n);
@@ -75,6 +88,18 @@ public class Matrix {
         for (int k=0; k<A.n; k++) {
           C.entries[i][j] += A.entries[i][k] * B.entries[k][j];
         }
+      }
+    }
+
+    return C;
+  }
+
+  public Matrix transpose() {
+    Matrix C = new Matrix(n, m);
+
+    for (int i=0; i<m; i++) {
+      for (int j=0; j<n; j++) {
+        C.entries[j][i] = entries[i][j];
       }
     }
 
