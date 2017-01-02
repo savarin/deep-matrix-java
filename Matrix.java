@@ -2,8 +2,8 @@ import java.util.Random;
 
 
 public class Matrix {
-  public int m;
-  public int n;
+  private int m;
+  private int n;
   public double[][] entries;
 
   public Matrix(int m, int n) {
@@ -152,5 +152,10 @@ public class Matrix {
       }
       System.out.println();
     }
+  }
+
+  public void shape() {
+    System.out.printf("(%d, %d)", m, n);
+    System.out.println();
   }
 }

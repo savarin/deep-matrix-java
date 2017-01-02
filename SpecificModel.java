@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Model {
+public class SpecificModel {
 
   public static List<List<String>> readCSV(String fileName)
       throws FileNotFoundException, IOException {
