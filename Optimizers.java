@@ -6,7 +6,7 @@ public class Optimizers implements Runnable {
   private double learningRate;
   private int numRows;
   private int numColumns;
-  private int numLabels;  
+  private int numLabels;
   public Matrix W;
   public Matrix B;
 
@@ -15,8 +15,8 @@ public class Optimizers implements Runnable {
     this.Y = Y;
     this.learningRate = learningRate;
 
-    this.numRows = X.entries.length;
-    this.numColumns = X.entries[0].length;
+    this.numRows = X.shape()[0];
+    this.numColumns = X.shape()[1];
     this.numLabels = Y.unique();
 
     this.W = Matrix.random(this.numLabels, this.numColumns, 0.001);
@@ -26,21 +26,16 @@ public class Optimizers implements Runnable {
   public void run() {
     double loss = 0;
 
-    for (int i=0; i<this.numRows; i++) {
+    for (int i = 0; i < this.numRows; i++) {
       int label = (int) this.Y.entries[i][0];
-
-      Matrix rowData = new Matrix(this.numColumns, 1);
-      for (int j=0; j<this.numColumns; j++) {
-        rowData.entries[j][0] = this.X.entries[i][j];
-      }
+      Matrix rowData = this.X.selectRow(i).transpose();
 
       Matrix result = this.W.times(rowData).plus(this.B);
-      Matrix normResult = result.softmax();
+      Matrix softmaxResult = result.softmax();
 
-      int labelIndex = normResult.argmax()[0];
-      loss += -Math.log(normResult.entries[labelIndex][0]);
-      System.out.println(java.lang.Thread.currentThread().getName() + " "
-          + loss / (double) i);
+      int labelIndex = softmaxResult.argmax()[0];
+      loss += -Math.log(softmaxResult.entries[labelIndex][0]);
+      // System.out.println(java.lang.Thread.currentThread().getName() + " " + loss / (double) i);
 
       Matrix labelOneHot = new Matrix(this.numLabels, 1);
       labelOneHot.entries[label][0] = 1.0;
@@ -55,34 +50,34 @@ public class Optimizers implements Runnable {
     }
   }
 
-  public static Matrix[] parallelOptimization(Matrix X, Matrix Y, double 
-      learningRate, int iterationCount) throws Exception {
-    Matrix[] evenOddData = PreProcessing.evenOddSplit(X, Y);
+  public static Matrix[] parallelOptimization(
+      Matrix X, Matrix Y, double learningRate, int iterationCount) throws Exception {
+    Matrix[] evenOddData = Preprocessors.evenOddSplit(X, Y);
     Matrix X1 = evenOddData[0];
     Matrix Y1 = evenOddData[1];
     Matrix X2 = evenOddData[2];
     Matrix Y2 = evenOddData[3];
 
-    OptimizationProcesses p1 = new OptimizationProcesses(X1, Y1, learningRate);
-    OptimizationProcesses p2 = new OptimizationProcesses(X2, Y2, learningRate);
+    Optimizers p1 = new Optimizers(X1, Y1, learningRate);
+    Optimizers p2 = new Optimizers(X2, Y2, learningRate);
 
-    for (int i=0; i<iterationCount; i++) {
+    for (int i = 0; i < iterationCount; i++) {
       java.lang.Thread t1 = new java.lang.Thread(p1);
-      java.lang.Thread t2 = new java.lang.Thread(p1);
+      java.lang.Thread t2 = new java.lang.Thread(p2);
 
       t1.start();
       t2.start();
 
       t1.join();
-      t2.join();  
+      t2.join();
     }
 
     Matrix W = p1.W.plus(p2.W);
     Matrix B = p1.B.plus(p2.B);
-    Matrix divisor = Matrix.diagonal(W.entries.length, 0.5);
+    Matrix divisor = Matrix.diagonal(W.shape()[0], 0.5);
     W = divisor.times(W);
     B = divisor.times(B);
-    
+
     Matrix[] results = new Matrix[2];
     results[0] = W;
     results[1] = B;
@@ -91,33 +86,26 @@ public class Optimizers implements Runnable {
   }
 
   /**
-   * Naive model training by selecting the weights-bias matrix pair that 
-   * produces the smallest lost.
+   * Naive model training by selecting the weights-bias matrix pair that produces the smallest loss.
    */
   public void naiveOptimization() {
     double minLoss = 1000.0;
 
-    for (int k=0; k<1000; k++) {
+    for (int k = 0; k < 1000; k++) {
       Matrix randomW = Matrix.random(this.numLabels, this.numColumns, 0.001);
       Matrix randomB = Matrix.random(this.numLabels, 1, 0.001);
 
       double loss = 0;
 
-      for (int i=0; i<this.numRows; i++) {
+      for (int i = 0; i < this.numRows; i++) {
         int label = (int) this.Y.entries[i][0];
-
-        double[][] features = new double[this.numColumns][1];
-        for (int j=0; j<this.numColumns; j++) {
-          features[j][0] = this.X.entries[i][j];
-        }
-
-        Matrix rowData = new Matrix(features);
+        Matrix rowData = this.X.selectRow(i).transpose();
 
         Matrix result = randomW.times(rowData).plus(randomB);
-        Matrix normResult = result.softmax();
+        Matrix softmaxResult = result.softmax();
 
-        int labelIndex = normResult.argmax()[0];
-        loss += -Math.log(normResult.entries[labelIndex][0]);
+        int labelIndex = softmaxResult.argmax()[0];
+        loss += -Math.log(softmaxResult.entries[labelIndex][0]);
       }
 
       loss = loss / numRows;
@@ -131,48 +119,4 @@ public class Optimizers implements Runnable {
       }
     }
   }
-
-  public static void naiveTest() throws Exception {
-    Matrix[] rawData = PreProcessing.readCSV("data.csv");
-    Matrix X = PreProcessing.scaleFeatures(rawData[0]);
-    Matrix Y = rawData[1];
-
-    OptimizationProcesses p1 = new OptimizationProcesses(X, Y, 0.001);
-    p1.naiveOptimization();
-  }
-
-  public static void gradientTest() throws Exception {
-    Matrix[] rawData = PreProcessing.readCSV("data.csv");
-    Matrix X = PreProcessing.scaleFeatures(rawData[0]);
-    Matrix Y = rawData[1];
-
-    OptimizationProcesses p1 = new OptimizationProcesses(X, Y, 0.001);
-    java.lang.Thread t1 = new java.lang.Thread(p1);
-    t1.start();
-  }
-
-  public static void parallelTest() throws Exception {
-    Matrix[] rawData = PreProcessing.readCSV("data.csv");
-    Matrix X = PreProcessing.scaleFeatures(rawData[0]);
-    Matrix Y = rawData[1];
-
-    Matrix[] results = parallelOptimization(X, Y, 0.001, 5);
-    results[0].show();
-    results[1].show();
-  }  
-
-  public static void main(String[] args) throws Exception {
-    naiveTest();
-    // gradientTest();
-    // parallelTest();
-  }
 }
-
-
-
-
-
-
-
-
-

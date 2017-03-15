@@ -2,15 +2,16 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class PreProcessing {
+public class Preprocessors {
 
   /**
-   * Reads data from a CSV file. Labels are in the left-most column, with
-   * features in the remaining columns.
+   * Reads data from a CSV file. Labels are in the left-most column, with features in the remaining
+   * columns.
+   *
    * @param fileName Path of CSV file.
    * @return Matrix[] Features matrix and label matrix.
    */
@@ -27,13 +28,13 @@ public class PreProcessing {
     int numColumns = stringData.get(0).size();
 
     double[][] labels = new double[numRows][1];
-    double[][] features = new double[numRows][numColumns-1];
+    double[][] features = new double[numRows][numColumns - 1];
 
-    for (int i=0; i<numRows; i++) {
+    for (int i = 0; i < numRows; i++) {
       labels[i][0] = Double.parseDouble(stringData.get(i).get(0));
 
-      for (int j=1; j<numColumns; j++) {
-        features[i][j-1] = Double.parseDouble(stringData.get(i).get(j));
+      for (int j = 1; j < numColumns; j++) {
+        features[i][j - 1] = Double.parseDouble(stringData.get(i).get(j));
       }
     }
 
@@ -49,21 +50,22 @@ public class PreProcessing {
 
   /**
    * Scales matrix such that each column has mean 0 and standard deviation 1.
+   *
    * @param X Features matrix.
    * @return Matrix Scaled features matrix.
    */
   public static Matrix scaleFeatures(Matrix X) {
-    int numRows = X.entries.length;
-    int numColumns = X.entries[0].length;
+    int numRows = X.shape()[0];
+    int numColumns = X.shape()[1];
 
     double[] columnMean = new double[numColumns];
     double[] columnStd = new double[numColumns];
 
-    for (int j=0; j<numColumns; j++) {
+    for (int j = 0; j < numColumns; j++) {
       double columnSum = 0.0;
       double columnSquaredSum = 0.0;
 
-      for (int i=0; i<numRows; i++) {
+      for (int i = 0; i < numRows; i++) {
         columnSum += X.entries[i][j];
         columnSquaredSum += X.entries[i][j] * X.entries[i][j];
       }
@@ -72,11 +74,11 @@ public class PreProcessing {
       columnStd[j] = Math.sqrt(columnSquaredSum / (double) numRows - columnMean[j] * columnMean[j]);
     }
 
-    for (int j=0; j<numColumns; j++) {
+    for (int j = 0; j < numColumns; j++) {
       double scaleMean = columnMean[j];
       double scaleStd = columnStd[j];
 
-      for (int i=0; i<numRows; i++) {
+      for (int i = 0; i < numRows; i++) {
         X.entries[i][j] = (X.entries[i][j] - scaleMean) / scaleStd;
       }
     }
@@ -86,22 +88,24 @@ public class PreProcessing {
 
   /**
    * Splits matrices into train and test matrices.
+   *
    * @param X Features matrix.
    * @param Y Label matrix.
+   * @param trainSize Proportion of dataset to include in training set.
    * @return Matrix[] Two features matrices and two label matrices.
    */
   public static Matrix[] trainTestSplit(Matrix X, Matrix Y, double trainSize) {
-    int numRows = X.entries.length;
-    int numColumns = X.entries[0].length;
+    int numRows = X.shape()[0];
+    int numColumns = X.shape()[1];
 
     int numRows1 = (int) (numRows * trainSize);
     double[][] labels1 = new double[numRows1][1];
     double[][] features1 = new double[numRows1][numColumns];
 
-    for (int i=0; i<numRows1; i++) {
+    for (int i = 0; i < numRows1; i++) {
       labels1[i][0] = Y.entries[i][0];
 
-      for (int j=0; j<numColumns; j++) {
+      for (int j = 0; j < numColumns; j++) {
         features1[i][j] = X.entries[i][j];
       }
     }
@@ -110,11 +114,11 @@ public class PreProcessing {
     double[][] labels2 = new double[numRows2][1];
     double[][] features2 = new double[numRows2][numColumns];
 
-    for (int i=0; i<numRows2; i++) {
-      labels2[i][0] = Y.entries[numRows1+i][0];
+    for (int i = 0; i < numRows2; i++) {
+      labels2[i][0] = Y.entries[numRows1 + i][0];
 
-      for (int j=0; j<numColumns; j++) {
-        features2[i][j] = X.entries[numRows1+i][j];
+      for (int j = 0; j < numColumns; j++) {
+        features2[i][j] = X.entries[numRows1 + i][j];
       }
     }
 
@@ -134,24 +138,25 @@ public class PreProcessing {
 
   /**
    * Splits matrices into two by row indices.
+   *
    * @param X Features matrix.
    * @param Y Label matrix.
    * @return Matrix[] Two features matrices and two label matrices.
    */
   public static Matrix[] evenOddSplit(Matrix X, Matrix Y) {
-    int numRows = X.entries.length;
-    int numColumns = X.entries[0].length;
+    int numRows = X.shape()[0];
+    int numColumns = X.shape()[1];
 
     int numRows1 = numRows / 2 + numRows % 2;
     double[][] labels1 = new double[numRows1][1];
     double[][] features1 = new double[numRows1][numColumns];
 
     // All rows with even-numbered indices
-    for (int i=0; i<numRows; i+=2) {
+    for (int i = 0; i < numRows; i += 2) {
       int rowIndex = i / 2;
       labels1[rowIndex][0] = Y.entries[i][0];
 
-      for (int j=0; j<numColumns; j++) {
+      for (int j = 0; j < numColumns; j++) {
         features1[rowIndex][j] = X.entries[i][j];
       }
     }
@@ -161,11 +166,11 @@ public class PreProcessing {
     double[][] features2 = new double[numRows2][numColumns];
 
     // All rows with odd-numbered indices
-    for (int i=1; i<numRows; i+=2) {
-      int rowIndex = (i-1) / 2;
+    for (int i = 1; i < numRows; i += 2) {
+      int rowIndex = (i - 1) / 2;
       labels2[rowIndex][0] = Y.entries[i][0];
 
-      for (int j=1; j<numColumns; j++) {
+      for (int j = 1; j < numColumns; j++) {
         features2[rowIndex][j] = X.entries[i][j];
       }
     }
