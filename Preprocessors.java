@@ -10,12 +10,12 @@ public class Preprocessors {
 
   /**
    * Reads data from a CSV file. Labels are in the left-most column, with features in the remaining
-   * columns.
+   * columns to the right.
    *
    * @param fileName Path of CSV file.
    * @return Matrix[] Features matrix and label matrix.
    */
-  public static Matrix[] readCSV(String fileName) throws Exception {
+  public static Matrix[] read(String fileName) throws Exception {
     BufferedReader inputData = new BufferedReader(new FileReader(new File(fileName)));
     List<List<String>> stringData = new ArrayList<List<String>>();
     String line = "";
@@ -54,7 +54,7 @@ public class Preprocessors {
    * @param X Features matrix.
    * @return Matrix Scaled features matrix.
    */
-  public static Matrix scaleFeatures(Matrix X) {
+  public static Matrix scale(Matrix X) {
     int numRows = X.shape()[0];
     int numColumns = X.shape()[1];
 
@@ -90,11 +90,11 @@ public class Preprocessors {
    * Splits matrices into train and test matrices.
    *
    * @param X Features matrix.
-   * @param Y Label matrix.
+   * @param Y Labels matrix.
    * @param trainSize Proportion of dataset to include in training set.
    * @return Matrix[] Two features matrices and two label matrices.
    */
-  public static Matrix[] trainTestSplit(Matrix X, Matrix Y, double trainSize) {
+  public static Matrix[] split(Matrix X, Matrix Y, double trainSize) {
     int numRows = X.shape()[0];
     int numColumns = X.shape()[1];
 
@@ -140,10 +140,10 @@ public class Preprocessors {
    * Splits matrices into two by row indices.
    *
    * @param X Features matrix.
-   * @param Y Label matrix.
+   * @param Y Labels matrix.
    * @return Matrix[] Two features matrices and two label matrices.
    */
-  public static Matrix[] evenOddSplit(Matrix X, Matrix Y) {
+  public static Matrix[] bisect(Matrix X, Matrix Y) {
     int numRows = X.shape()[0];
     int numColumns = X.shape()[1];
 
@@ -151,7 +151,6 @@ public class Preprocessors {
     double[][] labels1 = new double[numRows1][1];
     double[][] features1 = new double[numRows1][numColumns];
 
-    // All rows with even-numbered indices
     for (int i = 0; i < numRows; i += 2) {
       int rowIndex = i / 2;
       labels1[rowIndex][0] = Y.entries[i][0];
@@ -165,7 +164,6 @@ public class Preprocessors {
     double[][] labels2 = new double[numRows2][1];
     double[][] features2 = new double[numRows2][numColumns];
 
-    // All rows with odd-numbered indices
     for (int i = 1; i < numRows; i += 2) {
       int rowIndex = (i - 1) / 2;
       labels2[rowIndex][0] = Y.entries[i][0];

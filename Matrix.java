@@ -3,7 +3,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-/** Represents matrix with m rows, n columns and values as per entries array. */
 public class Matrix {
   private int m;
   private int n;
@@ -30,7 +29,7 @@ public class Matrix {
   }
 
   /** Selects row of specified index. */
-  public Matrix selectRow(int rowIndex) {
+  public Matrix row(int rowIndex) {
     Matrix rowData = new Matrix(1, this.n);
 
     for (int j = 0; j < this.n; j++) {
@@ -41,7 +40,7 @@ public class Matrix {
   }
 
   /** Selects column of specified index. */
-  public Matrix selectColumn(int columnIndex) {
+  public Matrix column(int columnIndex) {
     Matrix columnData = new Matrix(this.m, 1);
 
     for (int i = 0; i < this.m; i++) {
@@ -52,10 +51,11 @@ public class Matrix {
   }
 
   /**
-   * Random mxn matrix with Gaussian distributed values ~N(0, 0.001).
+   * Random mxn matrix with Gaussian distributed values ~N(0, scalar).
    *
    * @param m Row size of matrix.
    * @param n Column size of matrix.
+   * @param scalar Standard deviation multiple
    * @return Matrix Random mxn matrix.
    */
   public static Matrix random(int m, int n, double scalar) {
@@ -64,7 +64,7 @@ public class Matrix {
 
     for (int i = 0; i < m; i++) {
       for (int j = 0; j < n; j++) {
-        R.entries[i][j] = random.nextGaussian() * 0.01;
+        R.entries[i][j] = random.nextGaussian() * scalar;
       }
     }
 
