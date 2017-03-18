@@ -4,6 +4,7 @@ public class Optimizers implements Runnable {
   private Matrix X;
   private Matrix Y;
   private double learningRate;
+  private double dropoutRate;
   private boolean verbose;
   private int numRows;
   private int numColumns;
@@ -19,10 +20,11 @@ public class Optimizers implements Runnable {
    * @param learningRate Step size at each iteration.
    * @param verbose For logging to stdout.
    */
-  public Optimizers(Matrix X, Matrix Y, double learningRate, boolean verbose) {
+  public Optimizers(Matrix X, Matrix Y, double learningRate, double dropoutRate, boolean verbose) {
     this.X = X;
     this.Y = Y;
     this.learningRate = learningRate;
+    this.dropoutRate = dropoutRate;
     this.verbose = verbose;
 
     this.numRows = X.shape()[0];
@@ -44,15 +46,16 @@ public class Optimizers implements Runnable {
       Matrix result = this.W.times(rowData).plus(this.B);
       Matrix softmaxResult = result.softmax();
 
-      int labelIndex = softmaxResult.argmax()[0];
-      loss += -Math.log(softmaxResult.entries[labelIndex][0]);
       if (this.verbose) {
+        int labelIndex = softmaxResult.argmax()[0];
+        loss += -Math.log(softmaxResult.entries[labelIndex][0]);
+
         System.out.println(java.lang.Thread.currentThread().getName() + " " + loss / (double) i);
       }
 
       Matrix labelOneHot = new Matrix(this.numLabels, 1);
       labelOneHot.entries[label][0] = 1.0;
-      result = result.minus(labelOneHot);
+      result = result.relu().dropout(this.dropoutRate).minus(labelOneHot);
 
       Matrix columnData = rowData.transpose();
       Matrix gradient = result.times(columnData);
@@ -73,7 +76,7 @@ public class Optimizers implements Runnable {
    * @param verbose For logging to stdout.
    */
   public static Matrix[] parallel(
-      Matrix X, Matrix Y, double learningRate, int iterationCount, boolean verbose)
+      Matrix X, Matrix Y, double learningRate, double dropoutRate, int iterationCount, boolean verbose)
       throws Exception {
     Matrix[] evenOddData = Preprocessors.bisect(X, Y);
     Matrix evenX = evenOddData[0];
@@ -81,8 +84,8 @@ public class Optimizers implements Runnable {
     Matrix oddX = evenOddData[2];
     Matrix oddY = evenOddData[3];
 
-    Optimizers p1 = new Optimizers(evenX, evenY, learningRate, verbose);
-    Optimizers p2 = new Optimizers(oddX, oddY, learningRate, verbose);
+    Optimizers p1 = new Optimizers(evenX, evenY, learningRate, dropoutRate, verbose);
+    Optimizers p2 = new Optimizers(oddX, oddY, learningRate, dropoutRate, verbose);
 
     for (int i = 0; i < iterationCount; i++) {
       System.out.printf("Running iteration %d of %d...\n", i + 1, iterationCount);
@@ -124,10 +127,10 @@ public class Optimizers implements Runnable {
         Matrix rowData = this.X.row(i).transpose();
 
         Matrix result = randomW.times(rowData).plus(randomB);
-        Matrix softmaxResult = result.softmax();
+        result = result.softmax();
 
-        int labelIndex = softmaxResult.argmax()[0];
-        loss += -Math.log(softmaxResult.entries[labelIndex][0]);
+        int labelIndex = result.argmax()[0];
+        loss += -Math.log(result.entries[labelIndex][0]);
       }
 
       loss = loss / numRows;

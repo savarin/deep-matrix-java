@@ -9,8 +9,8 @@ import java.util.List;
 public class Preprocessors {
 
   /**
-   * Reads data from a CSV file. Labels are in the left-most column, with features in the remaining
-   * columns to the right.
+   * Reads data from a CSV file. Labels are in the left-most column with features in the remaining
+   * columns to the right. First row is assumed to be column names.
    *
    * @param fileName Path of CSV file.
    * @return Matrix[] Features matrix and label matrix.
@@ -30,7 +30,7 @@ public class Preprocessors {
     double[][] labels = new double[numRows][1];
     double[][] features = new double[numRows][numColumns - 1];
 
-    for (int i = 0; i < numRows; i++) {
+    for (int i = 1; i < numRows; i++) {
       labels[i][0] = Double.parseDouble(stringData.get(i).get(0));
 
       for (int j = 1; j < numColumns; j++) {
@@ -91,12 +91,13 @@ public class Preprocessors {
    *
    * @param X Features matrix.
    * @param Y Labels matrix.
-   * @param trainSize Proportion of dataset to include in training set.
+   * @param testSize Proportion of dataset to include in test set.
    * @return Matrix[] Two features matrices and two label matrices.
    */
-  public static Matrix[] split(Matrix X, Matrix Y, double trainSize) {
+  public static Matrix[] split(Matrix X, Matrix Y, double testSize) {
     int numRows = X.shape()[0];
     int numColumns = X.shape()[1];
+    double trainSize = 1 - testSize;
 
     int numRows1 = (int) (numRows * trainSize);
     double[][] labels1 = new double[numRows1][1];

@@ -55,16 +55,16 @@ public class Matrix {
    *
    * @param m Row size of matrix.
    * @param n Column size of matrix.
-   * @param scalar Standard deviation multiple
+   * @param scalar Standard deviation multiple.
    * @return Matrix Random mxn matrix.
    */
   public static Matrix random(int m, int n, double scalar) {
     Matrix R = new Matrix(m, n);
-    Random random = new Random();
+    Random randomClass = new Random();
 
     for (int i = 0; i < m; i++) {
       for (int j = 0; j < n; j++) {
-        R.entries[i][j] = random.nextGaussian() * scalar;
+        R.entries[i][j] = randomClass.nextGaussian() * scalar;
       }
     }
 
@@ -174,7 +174,39 @@ public class Matrix {
     return C;
   }
 
-  /** Returns index of the maximum value of the matrix. */
+  /** Retains only the positive entries of a matrix. */
+  public Matrix relu() {
+    Random randomClass = new Random();
+    Matrix C = new Matrix(this.m, this.n);
+
+    for (int i = 0; i < this.m; i++) {
+      for (int j = 0; j < this.n; j++) {
+        if (this.entries[i][j] > 0) {
+          C.entries[i][j] = this.entries[i][j];
+        }
+      }
+    }
+
+    return C;
+  }
+
+  /** Randomly sets entries to zero by pre-specified probability. */
+  public Matrix dropout(double probability) {
+    Random randomClass = new Random();
+    Matrix C = new Matrix(this.m, this.n);
+
+    for (int i = 0; i < this.m; i++) {
+      for (int j = 0; j < this.n; j++) {
+        if (randomClass.nextFloat() > probability) {
+          C.entries[i][j] = this.entries[i][j];
+        }
+      }
+    }
+
+    return C;
+  }
+
+  /** Returns indices of the maximum value of the matrix. */
   public int[] argmax() {
     double maxEntry = this.entries[0][0];
     int[] maxIndex = {0, 0};

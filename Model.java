@@ -2,6 +2,7 @@
 public class Model {
 
   private double learningRate;
+  private double dropoutRate;
   private int iterationCount;
   private boolean verbose;
   private int numLabels;
@@ -15,8 +16,9 @@ public class Model {
    * @param iterationCount Number of epochs for training.
    * @param verbose For logging to stdout.
    */
-  public Model(double learningRate, int iterationCount, boolean verbose) {
+  public Model(double learningRate, double dropoutRate, int iterationCount, boolean verbose) {
     this.learningRate = learningRate;
+    this.dropoutRate = dropoutRate;
     this.iterationCount = iterationCount;
     this.verbose = verbose;
   }
@@ -29,7 +31,7 @@ public class Model {
    */
   public void fit(Matrix trainX, Matrix trainY) throws Exception {
     Matrix[] results =
-        Optimizers.parallel(trainX, trainY, this.learningRate, this.iterationCount, this.verbose);
+        Optimizers.parallel(trainX, trainY, this.learningRate, this.dropoutRate, this.iterationCount, this.verbose);
     this.W = results[0];
     this.B = results[1];
     this.numLabels = trainY.unique();
@@ -49,10 +51,10 @@ public class Model {
       Matrix rowData = testX.row(i).transpose();
 
       Matrix result = this.W.times(rowData).plus(this.B);
-      Matrix softmaxResult = result.softmax();
+      result = result.relu().softmax();
 
       for (int j = 0; j < this.numLabels; j++) {
-        values.entries[i][j] = softmaxResult.entries[j][0];
+        values.entries[i][j] = result.entries[j][0];
       }
     }
 

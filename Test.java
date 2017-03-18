@@ -10,7 +10,7 @@ public class Test {
     Matrix Y = rawData[1];
 
     System.out.println("Initializing model...");
-    Optimizers p1 = new Optimizers(X, Y, 0.001, true);
+    Optimizers p1 = new Optimizers(X, Y, 0.001, 0.2, true);
 
     System.out.println("Training model...");
     p1.naive();
@@ -25,7 +25,7 @@ public class Test {
     Matrix Y = rawData[1];
 
     System.out.println("Initializing model...");
-    Optimizers p1 = new Optimizers(X, Y, 0.001, true);
+    Optimizers p1 = new Optimizers(X, Y, 0.001, 0.2, true);
 
     System.out.println("Training model...");
     java.lang.Thread t1 = new java.lang.Thread(p1);
@@ -42,7 +42,7 @@ public class Test {
 
     System.out.println("Initializing model...");
     System.out.println("Training model...");
-    Matrix[] results = Optimizers.parallel(X, Y, 0.001, 5, true);
+    Matrix[] results = Optimizers.parallel(X, Y, 0.001, 0.2, 5, true);
   }
 
   public static void modelTest() throws Exception {
@@ -53,14 +53,14 @@ public class Test {
     Matrix X = Preprocessors.scale(rawData[0]);
     Matrix Y = rawData[1];
 
-    Matrix[] trainTestData = Preprocessors.split(X, Y, 0.80);
+    Matrix[] trainTestData = Preprocessors.split(X, Y, 0.20);
     Matrix trainX = trainTestData[0];
     Matrix trainY = trainTestData[1];
     Matrix testX = trainTestData[2];
     Matrix testY = trainTestData[3];
 
     System.out.println("Initializing model...");
-    Model model = new Model(0.001, 10, false);
+    Model model = new Model(0.001, 0.2, 10, false);
 
     System.out.println("Training model...");
     model.fit(trainX, trainY);
