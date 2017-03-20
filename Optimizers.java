@@ -44,9 +44,9 @@ public class Optimizers implements Runnable {
       Matrix rowData = this.X.row(i).transpose();
 
       Matrix result = this.W.times(rowData).plus(this.B);
-      Matrix softmaxResult = result.softmax();
 
       if (this.verbose) {
+        Matrix softmaxResult = result.softmax();
         int labelIndex = softmaxResult.argmax()[0];
         loss += -Math.log(softmaxResult.entries[labelIndex][0]);
 
