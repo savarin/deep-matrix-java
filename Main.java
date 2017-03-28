@@ -69,7 +69,5 @@ public class Main {
     System.out.printf("Accuracy : %.3f\n", accuracyScore);
     System.out.printf("Precision: %.3f\n", precisionScore);
     System.out.printf("Recall   : %.3f\n", recallScore);
-
-    model.W.show();
   }
 }

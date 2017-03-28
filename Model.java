@@ -10,7 +10,7 @@ public class Model {
   public Matrix B;
 
   /**
-   * Neural network-based predictive model class.
+   * Constructor for neural network-based predictive model class.
    *
    * @param learningRate Step size at each iteration.
    * @param iterationCount Number of epochs for training.
@@ -41,6 +41,7 @@ public class Model {
    * Predicts class probabilities of test data.
    *
    * @param testX Test features matrix.
+   * @return Matrix Class probabilities.
    */
   public Matrix probabilities(Matrix testX) {
     int numRows = testX.shape()[0];
@@ -65,6 +66,7 @@ public class Model {
    * Predicts class labels of test data.
    *
    * @param testX Test features matrix.
+   * @return Matrix Class labels.
    */
   public Matrix predict(Matrix testX) {
     int numRows = testX.shape()[0];

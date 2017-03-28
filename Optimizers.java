@@ -13,7 +13,7 @@ public class Optimizers implements Runnable {
   public Matrix B;
 
   /**
-   * Gradient descent optimizer class.
+   * Constructor for gradient descent optimizer class.
    *
    * @param X Features matrix.
    * @param Y Labels matrix.
@@ -74,6 +74,7 @@ public class Optimizers implements Runnable {
    * @param learningRate Step size at each iteration.
    * @param iterationCount Number of epochs for training.
    * @param verbose For logging to stdout.
+   * @return Matrix[] Weights and bias matrices.
    */
   public static Matrix[] parallel(
       Matrix X, Matrix Y, double learningRate, double dropoutRate, int iterationCount, boolean verbose)

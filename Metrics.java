@@ -6,6 +6,7 @@ public class Metrics {
    *
    * @param testY Test labels matrix.
    * @param predictionY Predicted labels matrix.
+   * @return int[] Prediction counts.
    */
   public static int[] counts(Matrix testY, Matrix predictionY) {
     int numRows = testY.shape()[0];
@@ -39,6 +40,7 @@ public class Metrics {
    *
    * @param testY Test labels matrix.
    * @param predictionY Predicted labels matrix.
+   * @return double Accuracy score.
    */
   public static double accuracy(Matrix testY, Matrix predictionY) {
     int[] predictionCounts = counts(testY, predictionY);
@@ -51,6 +53,7 @@ public class Metrics {
    *
    * @param testY Test labels matrix.
    * @param predictionY Predicted labels matrix.
+   * @return double Precision score.
    */
   public static double precision(Matrix testY, Matrix predictionY) {
     int[] predictionCounts = counts(testY, predictionY);
@@ -62,6 +65,7 @@ public class Metrics {
    *
    * @param testY Test labels matrix.
    * @param predictionY Predicted labels matrix.
+   * @return Recall score.
    */
   public static double recall(Matrix testY, Matrix predictionY) {
     int[] predictionCounts = counts(testY, predictionY);
