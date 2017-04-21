@@ -138,6 +138,24 @@ public class Matrix {
     return C;
   }
 
+  /** Equality operation for two matrices. */
+  public boolean equals(Matrix B) {
+    Matrix A = this;
+
+    if (A.n != B.n) return false;
+    if (A.m != B.m) return false;
+
+    for (int i = 0; i < A.m; i++) {
+      for (int j = 0; j < A.n; j++) {
+        if (A.entries[i][j] != B.entries[i][j]) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
   /** Matrix transpose operation. */
   public Matrix transpose() {
     Matrix C = new Matrix(this.n, this.m);
