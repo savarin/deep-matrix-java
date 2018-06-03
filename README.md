@@ -1,6 +1,6 @@
 # Predictive modeling with neural networks
 
-*This project was completed as a part of Berkeley's Java: Discovering Its Power course. For the version in Clojure, please visit [Deep Matrix - Clojure](https://github.com/savarin/deep-matrix-clojure).*
+*This project was completed as a part of [Berkeley's Java: Discovering Its Power course](https://extension.berkeley.edu/search/publicCourseSearchDetails.do?method=load&courseId=40964). For the version in Clojure, please visit [Deep Matrix](https://github.com/savarin/deep-matrix-clojure).*
 
 ## Introduction
 
